@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import SignUp from "./components/SignUp";
+import {} from "react-router-dom";
+import { Route, Routes } from "react-router";
+import { createGlobalStyle } from "styled-components";
+import SignIn from "./components/SignIn";
 
-function App() {
+const GlobalStyle = createGlobalStyle`
+  
+`;
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <GlobalStyle />
+      <div>
+        <Routes>
+          <Route path="/sign-up" element={<SignUp />}></Route>
+          <Route path="/sign-in" element={<SignIn />}></Route>
+        </Routes>
+      </div>
+    </>
   );
-}
+};
 
 export default App;
