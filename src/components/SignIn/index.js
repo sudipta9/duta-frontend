@@ -1,5 +1,5 @@
 import { Formik } from "formik";
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Container,
@@ -10,14 +10,18 @@ import {
   Row,
 } from "react-bootstrap";
 import FormCheckInput from "react-bootstrap/esm/FormCheckInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
 import * as yup from "yup";
+import http from "../../http-config";
 
 const SignIn = () => {
   const initialValues = {
     mobileNumber: "",
     password: "",
   };
+
+  // * from validation
   const validationSchema = yup.object().shape({
     mobileNumber: yup
       .number()
@@ -31,6 +35,40 @@ const SignIn = () => {
         "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
       ),
   });
+
+  const [data, setData] = useState(initialValues);
+  const [hasError, setHasError] = useState("");
+  const navigate = useNavigate();
+  const cookie = useMemo(() => {
+    return new Cookies();
+  }, []);
+
+  const isComponentLoaded = useRef(true);
+
+  const signIn = async (data) => {
+    let res = null;
+    try {
+      res = await http.post("/user/sign-in", data);
+    } catch (err) {
+      res = err.response;
+    } finally {
+      return res.data;
+    }
+  };
+
+  useEffect(() => {
+    if (isComponentLoaded.current) isComponentLoaded.current = false;
+    else {
+      signIn(data).then((res) => {
+        if (res.success === true) {
+          cookie.set("auth-token", res.token);
+          navigate("/home");
+        }
+        if (res.success === false) setHasError(res.message);
+      });
+    }
+  }, [cookie, data, navigate]);
+
   return (
     <Container>
       <Row>
@@ -39,10 +77,7 @@ const SignIn = () => {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting, resetForm }) => {
-              setSubmitting(true);
-              resetForm();
-              setSubmitting(false);
-              console.log(values);
+              setData(values);
             }}
           >
             {({
@@ -59,6 +94,9 @@ const SignIn = () => {
                 onSubmit={handleSubmit}
               >
                 <h4 className="mb-5 text-secondary">Sign in to your Account</h4>
+                {hasError ? (
+                  <p className="p-0 m-0 text-danger text-center">{hasError}</p>
+                ) : null}
                 <FormGroup className="mb-3 col-12">
                   <FormLabel className="">
                     Mobile Number <span className="text-danger">*</span>
