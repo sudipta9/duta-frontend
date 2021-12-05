@@ -66,9 +66,11 @@ const Home = () => {
   // }, [token]);
 
   useEffect(() => {
-    getUserList(token).then((res) => {
-      if (res.success === true) setAllContacts(res.data);
-    });
+    setInterval(() => {
+      getUserList(token).then((res) => {
+        if (res.success === true) setAllContacts(res.data);
+      });
+    }, 300);
   }, [token]);
 
   return (

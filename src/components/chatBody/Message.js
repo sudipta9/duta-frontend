@@ -9,7 +9,7 @@ const Message = ({ messageBody, sent }) => {
         }`}
         style={
           sent
-            ? { maxWidth: "30vw", marginLeft: "auto" }
+            ? { maxWidth: "30vw", marginLeft: "auto", marginBottom: "5px" }
             : { maxWidth: "30vw", marginRight: "auto" }
         }
       >
